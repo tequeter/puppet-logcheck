@@ -69,11 +69,14 @@ reference documentation. For the explanation of rulesets, see
 
 ```puppet
 logcheck::ruleset { 'myapp':
-  system_server_ignore => [ ... ],
+  system_server_ignore => file('myapp/system_server_ignore.txt'),
   violations_report    => [ ... ],
   violations_ignore    => [ ... ],
 }
 ```
+
+This will use a pattern file from `modules/myapp/files/...` and some patterns
+provided as arrays.
 
 ## Reference
 

@@ -29,6 +29,11 @@
 # combinations of layers and levels, identified by the name of the system
 # component being reported on.
 #
+# The sets of patterns (`..._ignore` / `..._report` arguments) can be given
+# either as an array of pattern strings or as a large string (literal) with one
+# pattern per line (logcheck's format). The latter format is convenient for
+# file() or epp() calls.
+#
 # @param title
 #   The system component this ruleset relates to. Be careful not to conflict
 #   with files in the `logcheck-database` package, unless you actually intend
@@ -46,13 +51,13 @@
 #   You should not have to alter this.
 define logcheck::ruleset(
   Pattern['absent', 'present'] $ensure = 'present',
-  Array[String] $system_workstation_ignore = [],
-  Array[String] $system_server_ignore      = [],
-  Array[String] $system_paranoid_ignore    = [],
-  Array[String] $violations_ignore         = [],
-  Array[String] $violations_report         = [],
-  Array[String] $cracking_ignore           = [],
-  Array[String] $cracking_report           = [],
+  Logcheck::Patternsource $system_workstation_ignore = [],
+  Logcheck::Patternsource $system_server_ignore      = [],
+  Logcheck::Patternsource $system_paranoid_ignore    = [],
+  Logcheck::Patternsource $violations_ignore         = [],
+  Logcheck::Patternsource $violations_report         = [],
+  Logcheck::Patternsource $cracking_ignore           = [],
+  Logcheck::Patternsource $cracking_report           = [],
   Stdlib::Absolutepath $basedir = '/etc/logcheck',
 ) {
 
@@ -67,9 +72,15 @@ define logcheck::ruleset(
   }
 
   $_ruleset.each | $_dir, $_rules | {
+    if $_rules =~ Array {
+      $_content = epp('logcheck/ruleset.epp', { rules => $_rules })
+    } else {
+      $_content = $_rules
+    }
+
     file { "${basedir}/${_dir}/${title}":
       ensure  => $ensure,
-      content => epp('logcheck/ruleset.epp', { rules => $_rules }),
+      content => $_content,
     }
   }
 
