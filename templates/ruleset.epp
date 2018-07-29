@@ -1,0 +1,6 @@
+<%- | Array[String] $rules | -%>
+# Managed by Puppet
+
+<% $rules.each | $rule | { -%>
+<%= $rule %>
+<% } -%>
