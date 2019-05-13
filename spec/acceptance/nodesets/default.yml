@@ -12,5 +12,5 @@ CONFIG:
   consoleport: 443
   box: debian/stretch64
   masterless: true
-  puppet_collection: puppet5
+  puppet_collection: puppet6
   type: agent
