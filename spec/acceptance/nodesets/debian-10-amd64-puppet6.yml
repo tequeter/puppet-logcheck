@@ -1,0 +1,10 @@
+---
+HOSTS:
+  default:
+    platform: debian-10-amd64
+    packaging_platform: debian-10-amd64
+    hypervisor: vagrant
+CONFIG:
+  box: debian/buster64
+  puppet_collection: puppet6
+  type: agent

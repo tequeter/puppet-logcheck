@@ -2,6 +2,16 @@ require 'beaker-rspec/spec_helper'
 require 'beaker/puppet_install_helper'
 require 'beaker/module_install_helper'
 
+# Monkey-patch until Buster is supported
+hosts.each do |host|
+  platform = host['platform']
+  next if platform !~ %r{^debian-10-} || platform.codename
+  def platform.codename=(codename) # rubocop:disable Style/TrivialAccessors
+    @codename = codename
+  end
+  platform.codename = 'stretch'
+end
+
 run_puppet_install_helper
 install_module_on(hosts)
 install_module_dependencies_on(hosts)
