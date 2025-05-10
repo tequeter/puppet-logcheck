@@ -1,0 +1,10 @@
+version: 2
+groups:
+  - name: nodes
+    targets:
+      - name: puppet_logcheck_debian13
+        uri: puppet_logcheck_debian13
+        config:
+          transport: podman
+          podman:
+            shell-command: 'bash -lc'
