@@ -20,17 +20,19 @@ describe 'logcheck class' do
       idempotent_apply(pp)
     end
 
-    describe package('logcheck') do
-      it { is_expected.to be_installed }
+    it 'installs the logcheck package' do
+      shell_result = run_shell('dpkg-query -W logcheck')
+      expect(shell_result.exit_code).to eq(0)
     end
 
-    describe file('/etc/logcheck/logcheck.conf') do
-      its(:content) { is_expected.to match(%r{^SENDMAILTO="beaker"$}) }
+    it 'configures the recipient' do
+      shell_result = run_shell(%q{grep -Fx 'SENDMAILTO="beaker"' /etc/logcheck/logcheck.conf})
+      expect(shell_result.exit_code).to eq(0)
     end
 
-    describe file('/etc/logcheck/ignore.d.server/beaker_basics_spec') do
-      it { is_expected.to exist }
-      its(:content) { is_expected.to match(%r{pattern1}) }
+    it 'creates the server ignore ruleset' do
+      shell_result = run_shell('grep pattern1 /etc/logcheck/ignore.d.server/beaker_basics_spec')
+      expect(shell_result.exit_code).to eq(0)
     end
 
     context 'when executed' do
@@ -42,11 +44,13 @@ describe 'logcheck class' do
         end
       end
 
-      describe command('sudo -u logcheck /usr/sbin/logcheck -o') do
-        its(:exit_status) { is_expected.to eq 0 }
-        its(:stdout) { is_expected.not_to match(%r{pattern1}) }
-        its(:stdout) { is_expected.to     match(%r{pattern2}) }
-        its(:stdout) { is_expected.not_to match(%r{(pattern2.*){2}}m) } # Shouldn't find a dup
+      it 'reports only unmatched messages once' do
+        shell_result = run_shell('runuser -u logcheck -- /usr/sbin/logcheck -o')
+
+        expect(shell_result.exit_code).to eq(0)
+        expect(shell_result.stdout).not_to match(%r{pattern1})
+        expect(shell_result.stdout).to     match(%r{pattern2})
+        expect(shell_result.stdout).not_to match(%r{(pattern2.*){2}}m) # Shouldn't find a dup
       end
     end
   end
