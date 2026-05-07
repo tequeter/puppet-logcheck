@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 
 describe 'logcheck class' do
-  context 'default parameters' do
+  context 'with default parameters' do
     let(:pp) do
       <<-'PP'
         class { 'logcheck':
@@ -17,7 +17,7 @@ describe 'logcheck class' do
     end
 
     it 'applies idempotently' do
-      idempotent_apply(pp)
+      expect { idempotent_apply(pp) }.not_to raise_error
     end
 
     it 'installs the logcheck package' do
@@ -26,7 +26,7 @@ describe 'logcheck class' do
     end
 
     it 'configures the recipient' do
-      shell_result = run_shell(%q{grep -Fx 'SENDMAILTO="beaker"' /etc/logcheck/logcheck.conf})
+      shell_result = run_shell(%q(grep -Fx 'SENDMAILTO="beaker"' /etc/logcheck/logcheck.conf))
       expect(shell_result.exit_code).to eq(0)
     end
 
@@ -36,11 +36,11 @@ describe 'logcheck class' do
     end
 
     context 'when executed' do
-      # Produce 3 log messages, two of them dupes to test the summary feature.
       before(:all) do
-        %w( pattern1 pattern2 pattern2 ).each do |message|
+        # Produce 3 log messages, two of them dupes to test the summary feature.
+        ['pattern1', 'pattern2', 'pattern2'].each do |message|
           shell_result = run_shell("logger acceptance_basics_#{message}")
-          expect(shell_result.exit_code).to equal(0)
+          raise 'logger failed' unless shell_result.exit_code.zero?
         end
       end
 

@@ -20,26 +20,22 @@ require 'bolt/transport/podman/connection'
 # Use Podman's native JSON output mode instead. `--format json` returns arrays
 # for both `podman ps` and `podman inspect`, which is the shape Bolt's transport
 # code expects when finding and inspecting the target container.
-module Bolt
-  module Transport
-    class Podman
-      class Connection
-        def execute_local_json_command(subcommand, arguments = [])
-          cmd = [subcommand, '--format', 'json'].concat(arguments)
-          out, err, stat = run_cmd(cmd, env_hash)
+class Bolt::Transport::Podman::Connection
+  def execute_local_json_command(subcommand, arguments = [])
+    cmd = [subcommand, '--format', 'json'].concat(arguments)
+    out, err, stat = run_cmd(cmd, env_hash)
 
-          raise "podman #{cmd.join(' ')} failed: #{err}" unless stat.exitstatus.zero?
-
-          extract_json(out)
-        end
-
-        private
-
-        def extract_json(stdout)
-          parsed = JSON.parse(stdout)
-          parsed.is_a?(Array) ? parsed : [parsed]
-        end
-      end
+    unless stat.exitstatus.zero?
+      raise 'podman %{cmd} failed: %{err}' % { cmd: cmd.join(' '), err: err }
     end
+
+    extract_json(out)
+  end
+
+  private
+
+  def extract_json(stdout)
+    parsed = JSON.parse(stdout)
+    parsed.is_a?(Array) ? parsed : [parsed]
   end
 end

@@ -9,7 +9,9 @@ gem 'rspec-puppet'
 gem 'rspec-puppet-facts'
 gem 'puppet-lint'
 gem 'rake'
-gem 'rubocop'
+gem 'rubocop', require: false
+gem 'rubocop-i18n', require: false
+gem 'rubocop-rspec', require: false
 
 # Litmus and supporting tools
 gem 'puppet_litmus'

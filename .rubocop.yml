@@ -1,10 +1,15 @@
 ---
-require: rubocop-rspec
+plugins:
+- rubocop-i18n
+- rubocop-rspec
 AllCops:
   DisplayCopNames: true
+  NewCops: disable
+  SuggestExtensions: false
   TargetRubyVersion: '2.1'
+  UseCache: false
   Include:
-  - "./**/*.rb"
+  - "**/*.rb"
   Exclude:
   - bin/*
   - ".vendor/**/*"
@@ -16,13 +21,14 @@ AllCops:
   - "**/Puppetfile"
   - "**/Vagrantfile"
   - "**/Guardfile"
-Metrics/LineLength:
+Layout/LineLength:
   Description: People have wide screens, use them.
   Max: 200
-GetText/DecorateString:
-  Description: We don't want to decorate test output.
+I18n/GetText/DecorateString:
   Exclude:
   - spec/*
+I18n/GetText/DecorateFunctionMessage:
+  Enabled: false
 RSpec/BeforeAfterAll:
   Description: Beware of using after(:all) as it may cause state to leak between tests.
     A necessary evil in acceptance testing.
@@ -63,7 +69,11 @@ Style/TrailingCommaInArguments:
   Description: Prefer always trailing comma on multiline argument lists. This makes
     diffs, and re-ordering nicer.
   EnforcedStyleForMultiline: comma
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Description: Prefer always trailing comma on multiline literals. This makes diffs,
+    and re-ordering nicer.
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInHashLiteral:
   Description: Prefer always trailing comma on multiline literals. This makes diffs,
     and re-ordering nicer.
   EnforcedStyleForMultiline: comma
@@ -86,7 +96,7 @@ Style/StringMethods:
   Enabled: true
 Layout/EndOfLine:
   Enabled: false
-Layout/IndentHeredoc:
+Layout/HeredocIndentation:
   Enabled: false
 Metrics/AbcSize:
   Enabled: false
