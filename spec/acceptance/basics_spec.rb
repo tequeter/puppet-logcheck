@@ -1,4 +1,5 @@
 require 'spec_helper_acceptance'
+require 'timeout'
 
 describe 'logcheck class' do
   context 'with default parameters' do
@@ -47,9 +48,11 @@ describe 'logcheck class' do
       end
 
       it 'reports only unmatched messages once' do
-        shell_result = run_shell('runuser -u logcheck -- /usr/sbin/logcheck -o')
+        shell_result = Timeout.timeout(40, Timeout::Error, 'logcheck execution timed out') do
+          run_shell('timeout 30s runuser -u logcheck -- /usr/sbin/logcheck -o', expect_failures: true)
+        end
 
-        expect(shell_result.exit_code).to eq(0)
+        expect(shell_result.exit_code).to eq(0), shell_result.stderr
         expect(shell_result.stdout).not_to match(%r{pattern1})
         expect(shell_result.stdout).to     match(%r{pattern2})
         expect(shell_result.stdout).not_to match(%r{(pattern2.*){2}}m) # Shouldn't find a dup
