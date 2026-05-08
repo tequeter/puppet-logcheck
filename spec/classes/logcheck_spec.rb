@@ -8,6 +8,16 @@ describe 'logcheck' do
     # Would be nice to test one augeas change here, but rspec-puppet-augeas is broken :(
   end
 
+  context 'with log sources' do
+    let(:params) do
+      {
+        log_sources: 'files',
+      }
+    end
+
+    it { is_expected.to contain_class('logcheck::config').with_log_sources('files') }
+  end
+
   context 'with rulesets' do
     let(:params) do
       {

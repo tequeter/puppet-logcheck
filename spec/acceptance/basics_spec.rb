@@ -5,9 +5,11 @@ describe 'logcheck class' do
     let(:pp) do
       <<-'PP'
         class { 'logcheck':
-          summarize => 'summary',
-          mailto    => 'beaker',
-          rulesets  => {
+          summarize   => 'summary',
+          mailto      => 'beaker',
+          # The container image does not have log files available by default
+          log_sources => 'journal',
+          rulesets    => {
             beaker_basics_spec => {
               system_server_ignore => [ "acceptance_basics_pattern1" ],
             }

@@ -43,6 +43,7 @@ The following parameters are available in the `logcheck` class:
 * [`display_fqdn`](#-logcheck--display_fqdn)
 * [`enable_cracking_ignore`](#-logcheck--enable_cracking_ignore)
 * [`send_as_attachment`](#-logcheck--send_as_attachment)
+* [`log_sources`](#-logcheck--log_sources)
 * [`extra_config`](#-logcheck--extra_config)
 * [`config_file`](#-logcheck--config_file)
 * [`rulesets`](#-logcheck--rulesets)
@@ -116,6 +117,16 @@ Sends the log excerpt as an attachement rather than in the mail body
 
 Default value: `false`
 
+##### <a name="-logcheck--log_sources"></a>`log_sources`
+
+Data type: `Enum['package', 'files', 'journal', 'both']`
+
+Which log sources logcheck should read. `package` leaves the package
+defaults untouched. `files`, `journal`, and `both` manage
+logcheck.logfiles.d entries explicitly.
+
+Default value: `'package'`
+
 ##### <a name="-logcheck--extra_config"></a>`extra_config`
 
 Data type: `Hash`
@@ -159,6 +170,7 @@ The following parameters are available in the `logcheck::config` class:
 * [`display_fqdn`](#-logcheck--config--display_fqdn)
 * [`enable_cracking_ignore`](#-logcheck--config--enable_cracking_ignore)
 * [`send_as_attachment`](#-logcheck--config--send_as_attachment)
+* [`log_sources`](#-logcheck--config--log_sources)
 * [`extra_config`](#-logcheck--config--extra_config)
 * [`config_file`](#-logcheck--config--config_file)
 
@@ -203,6 +215,16 @@ Data type: `Boolean`
 Data type: `Boolean`
 
 
+
+##### <a name="-logcheck--config--log_sources"></a>`log_sources`
+
+Data type: `Enum['package', 'files', 'journal', 'both']`
+
+Which log sources logcheck should read. `package` leaves the package
+defaults untouched. `files`, `journal`, and `both` manage
+logcheck.logfiles.d entries explicitly.
+
+Default value: `'package'`
 
 ##### <a name="-logcheck--config--extra_config"></a>`extra_config`
 

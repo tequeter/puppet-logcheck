@@ -43,6 +43,7 @@ include logcheck
 
 ```yaml
 ---
+logcheck::log_sources: files
 logcheck::summarize: summary
 logcheck::rulesets:
   postfix_custom:
@@ -64,6 +65,32 @@ All arguments given through Hiera obviously work from a `class { 'logcheck':
 There are other useful global configuration parameters, see `logcheck` in the
 reference documentation. For the explanation of rulesets, see
 `logcheck::ruleset`.
+
+### Log sources
+
+By default this module leaves the package-provided log source selection alone:
+
+```puppet
+class { 'logcheck':
+  log_sources => 'package',
+}
+```
+
+Use `files`, `journal`, or `both` to manage
+`/etc/logcheck/logcheck.logfiles.d/syslog.logfiles` and
+`/etc/logcheck/logcheck.logfiles.d/journal.logfiles` explicitly.
+
+```puppet
+class { 'logcheck':
+  log_sources => 'files',
+}
+```
+
+On Debian 13, the package defaults may read both classic log files and the
+systemd journal. If both contain the same messages, logcheck can report
+duplicates. Journal reads may also trigger SELinux violations where the local
+policy does not allow the logcheck user to read the journal. On hosts where
+rsyslog log files are available, `log_sources => 'files'` avoids both issues.
 
 ### Integration with logcheck from profiles or other modules
 

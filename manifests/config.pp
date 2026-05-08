@@ -13,6 +13,9 @@
 # @param display_fqdn
 # @param enable_cracking_ignore
 # @param send_as_attachment
+# @param log_sources
+# @param syslog_logfiles
+# @param journal_logfiles
 # @param extra_config
 # @param config_file
 class logcheck::config (
@@ -23,9 +26,26 @@ class logcheck::config (
   Boolean $display_fqdn,
   Boolean $enable_cracking_ignore,
   Boolean $send_as_attachment,
+  Enum['package', 'files', 'journal', 'both'] $log_sources,
+  Array[Stdlib::Absolutepath] $syslog_logfiles,
+  Array[String[1]] $journal_logfiles,
 
   Hash $extra_config = {},
   Stdlib::Absolutepath $config_file = '/etc/logcheck/logcheck.conf',
+
+  String $disabled_content = "# This log source is disabled by Puppet.\n",
+  String $syslog_sources =
+    if $log_sources in ['files', 'both'] {
+      "${syslog_logfiles.join("\n")}\n"
+    } else {
+      $disabled_content
+    },
+  String $journal_sources =
+    if $log_sources in ['journal', 'both'] {
+      "${journal_logfiles.join("\n")}\n"
+    } else {
+      $disabled_content
+    },
 ) {
 
   case $summarize {
@@ -61,5 +81,17 @@ class logcheck::config (
     incl    => $config_file,
     context => "/files/${config_file}",
     changes => $_changes,
+  }
+
+  if $log_sources != 'package' {
+    file { '/etc/logcheck/logcheck.logfiles.d/syslog.logfiles':
+      ensure  => file,
+      content => $syslog_sources,
+    }
+
+    file { '/etc/logcheck/logcheck.logfiles.d/journal.logfiles':
+      ensure  => file,
+      content => $journal_sources,
+    }
   }
 }

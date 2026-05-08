@@ -24,6 +24,16 @@
 # @param send_as_attachment
 #   Sends the log excerpt as an attachement rather than in the mail body
 #   (MAILASATTACH).
+# @param log_sources
+#   Which log sources logcheck should read. `package` leaves the package
+#   defaults untouched. `files`, `journal`, and `both` manage
+#   logcheck.logfiles.d entries explicitly.
+# @param syslog_logfiles
+#   List of absolute paths to syslog logfiles to monitor when `log_sources`
+#   is `files` or `both`.
+# @param journal_logfiles
+#   List of journal log sources to monitor when `log_sources` is `journal`
+#   or `both`.
 # @param extra_config
 #   Inserts further `NAME=value` pairs in the configuration file.
 # @param config_file
@@ -40,6 +50,9 @@ class logcheck (
   Boolean $display_fqdn = true,
   Boolean $enable_cracking_ignore = false,
   Boolean $send_as_attachment = false,
+  Enum['package', 'files', 'journal', 'both'] $log_sources = 'package',
+  Array[Stdlib::Absolutepath] $syslog_logfiles = ['/var/log/syslog', '/var/log/auth.log'],
+  Array[String[1]] $journal_logfiles = ['journal'],
 
   Hash $extra_config = {},
   Stdlib::Absolutepath $config_file = '/etc/logcheck/logcheck.conf',
@@ -66,6 +79,9 @@ class logcheck (
       display_fqdn           => $display_fqdn,
       enable_cracking_ignore => $enable_cracking_ignore,
       send_as_attachment     => $send_as_attachment,
+      log_sources            => $log_sources,
+      syslog_logfiles        => $syslog_logfiles,
+      journal_logfiles       => $journal_logfiles,
       extra_config           => $extra_config,
       config_file            => $config_file,
     }
